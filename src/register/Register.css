@@ -1,0 +1,160 @@
+.register-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.register-left {
+  flex: 1;
+  background: url("/Background.jpg") no-repeat center center;
+  background-size: cover;
+  padding: 300px;
+}
+
+.register-right {
+  flex: 1;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.register-box input:focus {
+  outline: none;
+  border-color: #999;
+  box-shadow: 0 0 0 1px #ccc;
+}
+
+.register-box h2 {
+  margin-bottom: 5px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #222;
+}
+.register-box label {
+  display: block;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 6px;
+  margin-top: 12px;
+  font-weight: 500;
+}
+.register-box label:first-of-type {
+  margin-top: 0;
+}
+
+.login-link {
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.login-link a {
+  text-decoration: underline;
+  color: #000;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.register-box input[type="text"],
+.register-box input[type="email"],
+.register-box input[type="password"] {
+  padding: 14px 20px;
+  border-radius: 12px; /* Lebih membulat */
+  border: 1px solid #ccc;
+  font-size: 16px;
+  width: 100%;
+  background-color: white;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.hide-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+}
+
+small {
+  font-size: 12px;
+  color: #777;
+  margin-top: -5px;
+}
+
+.create-account-btn {
+  margin-top: 10px;
+  background: #ddd;
+  border: none;
+  padding: 14px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+  width: 100%;
+  color: #fff;
+  transition: background 0.3s ease;
+}
+
+.create-account-btn.active {
+  background: #007bff; /* warna biru */
+  cursor: pointer;
+}
+
+.terms {
+  margin-top: 16px;
+  font-size: 12px;
+  color: #555;
+  text-align: left;
+}
+
+.terms a {
+  text-decoration: underline;
+  color: #000;
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.hide-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #555;
+  cursor: pointer;
+  user-select: none;
+}
+.login-link {
+  color: #4caf50;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.login-link:hover {
+  color: #2c712f;
+}
+.back-arrow {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #333;
+  font-weight: 500;
+  z-index: 10;
+}

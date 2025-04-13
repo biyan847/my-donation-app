@@ -1,0 +1,150 @@
+/* Container utama halaman detail */
+.campaign-detail-container {
+  display: flex;
+  gap: 40px;
+  padding: 100px 80px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.campaign-detail-left {
+  flex: 2;
+}
+
+.campaign-detail-left h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #111;
+}
+
+.campaign-detail-left .desc {
+  color: #666;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.campaign-image-wrapper {
+  margin-bottom: 24px;
+}
+
+.campaign-image {
+  width: 100%;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+.campaign-description p {
+  font-size: 15px;
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.campaign-description a {
+  color: #22c55e;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.campaign-organizer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.organizer-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Sidebar kanan */
+.campaign-detail-right {
+  flex: 1;
+  background-color: #fff;
+  border: 1px solid #eee;
+  padding: 24px;
+  border-radius: 12px;
+  height: fit-content;
+}
+
+.donation-progress .progress-label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.donation-amount {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #111;
+}
+
+.donation-amount span {
+  font-weight: 400;
+  color: #999;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #22c55e;
+}
+
+.donation-form {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.eth-input,
+.support-textarea {
+  padding: 12px 16px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.usd-estimate {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: -8px;
+}
+
+.donate-button {
+  background-color: #22c55e;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.donate-button:hover {
+  background-color: #16a34a;
+}
+
+.note {
+  font-size: 13px;
+  color: #666;
+  margin-top: 8px;
+  font-style: italic;
+  text-align: center;
+}
