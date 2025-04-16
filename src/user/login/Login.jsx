@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./login.css";
 import ReCAPTCHA from "react-google-recaptcha";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -11,6 +12,8 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     setIsFormValid(email && password && captchaValue);
@@ -26,8 +29,11 @@ const Login = () => {
   };
 
   const handleOtpVerify = () => {
-    if (otp === "123456") {
+    if (otp === "123") {
+      const dummyToken = "dummy_jwt_token_abc123";
+      localStorage.setItem("authToken", dummyToken); // Simpan token JWT
       alert("Login berhasil!");
+      navigate("/dashboard"); // Pastikan ini ke /dashboard, bukan "/"
     } else {
       alert("OTP salah, coba lagi.");
     }
@@ -71,7 +77,7 @@ const Login = () => {
                     className="hide-icon"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? "👁️‍🗨️" : "👁️"}
+                    {showPassword ? "👁️‍🔨" : "👁"}
                   </span>
                 </div>
 

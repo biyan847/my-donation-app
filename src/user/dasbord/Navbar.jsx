@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "../components/Navbar.css";
+import "../dasbord/Navbar.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -11,7 +11,7 @@ const Navbar = () => {
   if (isAuthPage) return null;
 
   const navLinks = [
-    { path: "/", label: "Home" },
+    { path: "/dashboard", label: "Home" },
     { path: "/explore", label: "Explore" },
     { path: "/campaigns", label: "Campaigns" },
   ];
@@ -45,7 +45,9 @@ const Navbar = () => {
           src="https://img.icons8.com/?size=100&id=11779&format=png&color=000000"
           alt="User"
         />
-        <div className="settings-icon">⚙️</div>
+        <div className="settings-icon" onClick={() => navigate("/settings")}>
+          ⚙️
+        </div>
       </div>
     </nav>
   );

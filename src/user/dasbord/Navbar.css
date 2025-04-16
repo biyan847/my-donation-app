@@ -1,0 +1,74 @@
+/* --- Navbar base --- */
+.navbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 16px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+
+/* --- Tema warna berdasarkan halaman --- */
+.navbar-dark .nav-links li a {
+  color: white;
+}
+
+.navbar-light .nav-links li a {
+  color: black;
+}
+
+/* --- Link umum --- */
+.nav-links li a {
+  position: relative;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+/* --- Underline animasi default --- */
+.nav-links li a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: currentColor;
+  transition: width 0.3s ease;
+}
+
+/* --- Hover & Active untuk underline --- */
+.navbar-dark .nav-links li a:hover::after,
+.navbar-dark .nav-links li a.active::after,
+.navbar-light .nav-links li a:hover::after,
+.navbar-light .nav-links li a.active::after {
+  width: 100%;
+}
+
+/* --- Active link style (abu-abu) untuk non-dashboard --- */
+.navbar-light .nav-links li a.active {
+  color: gray;
+}
+
+/* --- Animasi underline abu-abu --- */
+.navbar-light .nav-links li a.active::after {
+  background: gray;
+  animation: underline 0.3s ease-in-out;
+}
+
+/* --- Keyframes --- */
+@keyframes underline {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+.navbar-light {
+  border-bottom: 1px solid #eaecf0;
+}

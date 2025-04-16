@@ -1,0 +1,154 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body,
+html {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* NAVBAR */
+.navbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 16px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: #36c24d;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 24px;
+}
+
+.nav-links li a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border: 2px solid white;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  backdrop-filter: blur(6px);
+  width: 220px;
+}
+
+.search-bar input {
+  background: transparent;
+  border: none; /* tambahkan ini untuk hilangkan border putih */
+  color: white;
+  outline: none;
+  width: 100%;
+  font-size: 16px;
+}
+
+.search-bar input::placeholder {
+  color: white;
+  opacity: 0.8;
+}
+
+.search-icon {
+  color: white;
+  font-size: 18px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.settings-icon {
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* HERO SECTION */
+.hero {
+  width: 100vw;
+  height: 100vh;
+  background: url("/Background.jpg") no-repeat center center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+}
+
+.hero-content {
+  text-align: center;
+  padding: 40px 60px;
+  border-radius: 12px;
+  max-width: 700px;
+  color: white;
+  width: 100%;
+}
+
+.hero h1 {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.hero p {
+  font-size: 18px;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.get-started {
+  background: #4caf50;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+.login-text {
+  margin-top: 10px;
+  font-size: 14px;
+  color: white; /* teks utama */
+}
+
+.login-linkdb {
+  color: #4caf50; /* hijau seperti yang kamu minta */
+  cursor: pointer;
+  text-decoration: underline;
+}
