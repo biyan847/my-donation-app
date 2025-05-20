@@ -1,48 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Explore.css";
 
 const Explore = () => {
   const navigate = useNavigate();
-  const campaigns = [
-    {
-      id: 1,
-      owner: "Olivia Rhye",
-      title: "Ms. Saint-Martin Doranyia Pascal",
-      desc: "Hi! This is your Miss Teen Carnival 2022...",
-      eth: 10,
-      progress: 50,
-      image: "/Background.jpg",
-      date: "2024-04-01",
-      status: "active",
-      category: "Education",
-    },
-    {
-      id: 2,
-      owner: "Jaylon Aminoff",
-      title: "LET'S MAKE THE DIY...",
-      desc: "David Perez aka Chino, who started skating...",
-      eth: 50,
-      progress: 75,
-      image: "/donate.jpeg",
-      date: "2024-03-15",
-      status: "completed",
-      category: "Sports",
-    },
-    {
-      id: 3,
-      owner: "Jakob Septimus",
-      title: "Mini-Oven for pick-a-pão",
-      desc: "I would like nothing more than to continue...",
-      eth: 19,
-      progress: 75,
-      image: "/campaign3.jpg",
-      date: "2024-03-25",
-      status: "active",
-      category: "Health",
-    },
-  ];
 
+  // States untuk filter
   const [searchTerm, setSearchTerm] = useState("");
   const [minEth, setMinEth] = useState("");
   const [maxEth, setMaxEth] = useState("");
@@ -50,10 +13,31 @@ const Explore = () => {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [priceOrder, setPriceOrder] = useState("desc");
   const [dateOrder, setDateOrder] = useState("desc");
-  const [filteredCampaigns, setFilteredCampaigns] = useState(campaigns);
+  const [campaigns, setCampaigns] = useState([]); // ← Tambahkan ini
+  const [filteredCampaigns, setFilteredCampaigns] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
 
+  // State untuk loading
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const fetchCampaigns = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/campaigns");
+        const data = await res.json();
+        setCampaigns(data); // simpan ke state sumber
+        setFilteredCampaigns(data); // tampilkan juga sebagai data awal
+      } catch (err) {
+        console.error("Failed to fetch campaigns", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCampaigns();
+  }, []);
+
   const handleFilter = () => {
+    setIsLoading(true); // Tampilkan loading saat filter aktif
     let result = [...campaigns];
 
     if (searchTerm) {
@@ -81,6 +65,7 @@ const Explore = () => {
     }
 
     setFilteredCampaigns(result);
+    setIsLoading(false); // Sembunyikan loading setelah filter selesai
   };
 
   const toggleSortByPrice = () => {
@@ -103,15 +88,24 @@ const Explore = () => {
     setDateOrder(nextOrder);
   };
 
-  const resetView = () => {
-    setFilteredCampaigns(campaigns);
-    setSearchTerm("");
-    setMinEth("");
-    setMaxEth("");
-    setStatusFilter("");
-    setCategoryFilter("");
-    setPriceOrder("desc");
-    setDateOrder("desc");
+  const resetView = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch("http://localhost:5000/api/campaigns");
+      const data = await res.json();
+      setFilteredCampaigns(data);
+    } catch (err) {
+      console.error("Failed to reset view", err);
+    } finally {
+      setIsLoading(false);
+      setSearchTerm("");
+      setMinEth("");
+      setMaxEth("");
+      setStatusFilter("");
+      setCategoryFilter("");
+      setPriceOrder("desc");
+      setDateOrder("desc");
+    }
   };
 
   return (
@@ -182,27 +176,37 @@ const Explore = () => {
         </div>
       )}
 
-      <div className="card-container">
-        {filteredCampaigns.map((card) => (
-          <div
-            className="campaign-card"
-            key={card.id}
-            onClick={() => navigate(`/campaign/${card.id}`)}
-            style={{ cursor: "pointer" }}
-          >
-            <img src={card.image} alt={card.title} />
-            <div className="card-content">
-              <p className="owner">{card.owner}</p>
-              <h3>{card.title}</h3>
-              <p className="desc">{card.desc}</p>
-              <div className="bottom-info">
-                <span>🎁 {card.eth} eth</span>
-                <span>{card.progress}%</span>
+      {/* Loading Indicator */}
+      {isLoading ? (
+        <div className="loading-indicator">
+          <div className="spinner"></div> {/* Spinner CSS */}
+        </div>
+      ) : (
+        <div className="card-container">
+          {filteredCampaigns.map((card) => (
+            <div
+              className="campaign-card"
+              key={card.id}
+              onClick={() => navigate(`/campaign/${card.id}`)}
+              style={{ cursor: "pointer" }}
+            >
+              <img
+                src={`http://localhost:5000/uploads/campaigns/${card.image_url}`}
+                alt={card.title}
+              />
+              <div className="card-content">
+                <p className="owner">{card.owner || "Unknown"}</p>
+                <h3>{card.title}</h3>
+                <p className="desc">{card.story}</p>
+                <div className="bottom-info">
+                  <span>🎁 {card.goal_amount} ETH</span>
+                  <span>{card.progress || 0}%</span>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

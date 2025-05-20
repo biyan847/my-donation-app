@@ -1,129 +1,172 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Explore_Admin.css";
 import { FaCheckCircle, FaBan, FaTrashAlt } from "react-icons/fa";
 
-const Explore_Admin = () => {
+const AdminExplore = () => {
   const navigate = useNavigate();
-  const campaigns = [
-    {
-      id: 1,
-      owner: "Olivia Rhye",
-      title: "Ms. Saint-Martin Doranyia Pascal",
-      desc: "Hi! This is your Miss Teen Carnival 2022...",
-      eth: 10,
-      progress: 50,
-      image: "/Background.jpg",
-      date: "2024-04-01",
-      status: "active",
-      category: "Education",
-    },
-    {
-      id: 2,
-      owner: "Jaylon Aminoff",
-      title: "LET'S MAKE THE DIY...",
-      desc: "David Perez aka Chino, who started skating...",
-      eth: 50,
-      progress: 75,
-      image: "/donate.jpeg",
-      date: "2024-03-15",
-      status: "completed",
-      category: "Sports",
-    },
-    {
-      id: 3,
-      owner: "Jakob Septimus",
-      title: "Mini-Oven for pick-a-pão",
-      desc: "I would like nothing more than to continue...",
-      eth: 19,
-      progress: 75,
-      image: "/campaign3.jpg",
-      date: "2024-03-25",
-      status: "active",
-      category: "Health",
-    },
-  ];
+  const [adminCampaigns, setAdminCampaigns] = useState([]);
+  const [adminFilteredCampaigns, setAdminFilteredCampaigns] = useState([]);
+  const [adminSearchTerm, setAdminSearchTerm] = useState("");
+  const [adminMinEth, setAdminMinEth] = useState("");
+  const [adminMaxEth, setAdminMaxEth] = useState("");
+  const [adminStatusFilter, setAdminStatusFilter] = useState("");
+  const [adminCategoryFilter, setAdminCategoryFilter] = useState("");
+  const [adminPriceOrder, setAdminPriceOrder] = useState("desc");
+  const [adminDateOrder, setAdminDateOrder] = useState("desc");
+  const [adminShowFilters, setAdminShowFilters] = useState(false);
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [minEth, setMinEth] = useState("");
-  const [maxEth, setMaxEth] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [priceOrder, setPriceOrder] = useState("desc");
-  const [dateOrder, setDateOrder] = useState("desc");
-  const [filteredCampaigns, setFilteredCampaigns] = useState(campaigns);
-  const [showFilters, setShowFilters] = useState(false);
+  useEffect(() => {
+    const fetchAdminCampaigns = async () => {
+      const token = localStorage.getItem("authToken");
+      try {
+        const res = await fetch("http://localhost:5000/api/admins/campaigns", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        setAdminCampaigns(data);
+        setAdminFilteredCampaigns(data);
+      } catch (err) {
+        console.error("Error fetching campaigns:", err);
+      }
+    };
 
-  const handleFilter = () => {
-    let result = [...campaigns];
-    if (searchTerm) {
+    fetchAdminCampaigns();
+  }, []);
+
+  const handleAdminFilter = () => {
+    let result = [...adminCampaigns];
+    if (adminSearchTerm) {
       result = result.filter(
         (c) =>
-          c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          c.desc.toLowerCase().includes(searchTerm.toLowerCase())
+          c.title.toLowerCase().includes(adminSearchTerm.toLowerCase()) ||
+          c.story.toLowerCase().includes(adminSearchTerm.toLowerCase())
       );
     }
-    if (minEth) {
-      result = result.filter((c) => c.eth >= parseFloat(minEth));
+    if (adminMinEth) {
+      result = result.filter((c) => c.goal_amount >= parseFloat(adminMinEth));
     }
-    if (maxEth) {
-      result = result.filter((c) => c.eth <= parseFloat(maxEth));
+    if (adminMaxEth) {
+      result = result.filter((c) => c.goal_amount <= parseFloat(adminMaxEth));
     }
-    if (statusFilter) {
-      result = result.filter((c) => c.status === statusFilter);
+    if (adminStatusFilter) {
+      result = result.filter((c) => c.status === adminStatusFilter);
     }
-    if (categoryFilter) {
-      result = result.filter((c) => c.category === categoryFilter);
+    if (adminCategoryFilter) {
+      result = result.filter((c) => c.category === adminCategoryFilter);
     }
-    setFilteredCampaigns(result);
+    setAdminFilteredCampaigns(result);
   };
 
-  const toggleSortByPrice = () => {
-    const nextOrder = priceOrder === "asc" ? "desc" : "asc";
-    const sorted = [...filteredCampaigns].sort((a, b) =>
-      nextOrder === "asc" ? a.eth - b.eth : b.eth - a.eth
-    );
-    setFilteredCampaigns(sorted);
-    setPriceOrder(nextOrder);
-  };
-
-  const toggleSortByDate = () => {
-    const nextOrder = dateOrder === "asc" ? "desc" : "asc";
-    const sorted = [...filteredCampaigns].sort((a, b) =>
+  const toggleAdminSortByPrice = () => {
+    const nextOrder = adminPriceOrder === "asc" ? "desc" : "asc";
+    const sorted = [...adminFilteredCampaigns].sort((a, b) =>
       nextOrder === "asc"
-        ? new Date(a.date) - new Date(b.date)
-        : new Date(b.date) - new Date(a.date)
+        ? a.goal_amount - b.goal_amount
+        : b.goal_amount - a.goal_amount
     );
-    setFilteredCampaigns(sorted);
-    setDateOrder(nextOrder);
+    setAdminFilteredCampaigns(sorted);
+    setAdminPriceOrder(nextOrder);
   };
 
-  const resetView = () => {
-    setFilteredCampaigns(campaigns);
-    setSearchTerm("");
-    setMinEth("");
-    setMaxEth("");
-    setStatusFilter("");
-    setCategoryFilter("");
-    setPriceOrder("desc");
-    setDateOrder("desc");
+  const toggleAdminSortByDate = () => {
+    const nextOrder = adminDateOrder === "asc" ? "desc" : "asc";
+    const sorted = [...adminFilteredCampaigns].sort((a, b) =>
+      nextOrder === "asc"
+        ? new Date(a.deadline) - new Date(b.deadline)
+        : new Date(b.deadline) - new Date(a.deadline)
+    );
+    setAdminFilteredCampaigns(sorted);
+    setAdminDateOrder(nextOrder);
   };
 
-  const handleVerify = (e, id) => {
+  const resetAdminView = () => {
+    setAdminFilteredCampaigns(adminCampaigns);
+    setAdminSearchTerm("");
+    setAdminMinEth("");
+    setAdminMaxEth("");
+    setAdminStatusFilter("");
+    setAdminCategoryFilter("");
+    setAdminPriceOrder("desc");
+    setAdminDateOrder("desc");
+  };
+
+  const handleAdminVerify = async (e, id) => {
     e.stopPropagation();
-    alert(`Campaign ID ${id} has been verified.`);
+    const token = localStorage.getItem("authToken");
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/admins/campaigns/${id}/verify`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status: "active" }),
+        }
+      );
+      if (res.ok) {
+        alert("Campaign verified!");
+        setAdminFilteredCampaigns((prev) =>
+          prev.map((c) => (c.id === id ? { ...c, status: "active" } : c))
+        );
+      }
+    } catch (err) {
+      console.error("Error verifying campaign:", err);
+    }
   };
 
-  const handleDeactivate = (e, id) => {
+  const handleAdminDeactivate = async (e, id) => {
     e.stopPropagation();
-    alert(`Campaign ID ${id} has been deactivated.`);
+    const token = localStorage.getItem("authToken");
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/admins/campaigns/${id}/verify`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status: "inactive" }),
+        }
+      );
+      if (res.ok) {
+        alert("Campaign deactivated.");
+        setAdminFilteredCampaigns((prev) =>
+          prev.map((c) => (c.id === id ? { ...c, status: "inactive" } : c))
+        );
+      }
+    } catch (err) {
+      console.error("Error deactivating campaign:", err);
+    }
   };
 
-  const handleDelete = (e, id) => {
+  const handleAdminDelete = async (e, id) => {
     e.stopPropagation();
     const confirmDelete = window.confirm("Are you sure you want to delete?");
-    if (confirmDelete) {
-      setFilteredCampaigns(filteredCampaigns.filter((c) => c.id !== id));
+    if (!confirmDelete) return;
+
+    const token = localStorage.getItem("authToken");
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/admins/campaigns/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.ok) {
+        alert("Campaign deleted.");
+        setAdminFilteredCampaigns((prev) => prev.filter((c) => c.id !== id));
+      }
+    } catch (err) {
+      console.error("Error deleting campaign:", err);
     }
   };
 
@@ -135,99 +178,109 @@ const Explore_Admin = () => {
           <p>Where do you want to help</p>
         </div>
         <div className="filter-buttons">
-          <button onClick={resetView}>All views</button>
-          <button onClick={toggleSortByPrice}>
-            {priceOrder === "asc" ? "↓ Price (low)" : "↑ Price (high)"}
+          <button onClick={resetAdminView}>All views</button>
+          <button onClick={toggleAdminSortByPrice}>
+            {adminPriceOrder === "asc" ? "↓ Price (low)" : "↑ Price (high)"}
           </button>
-          <button onClick={toggleSortByDate}>
-            {dateOrder === "asc" ? "↓ Date (old)" : "↑ Date (new)"}
+          <button onClick={toggleAdminSortByDate}>
+            {adminDateOrder === "asc" ? "↓ Date (old)" : "↑ Date (new)"}
           </button>
-          <button onClick={() => setShowFilters(!showFilters)}>
-            {showFilters ? "Hide filters" : "Show filters"}
+          <button onClick={() => setAdminShowFilters(!adminShowFilters)}>
+            {adminShowFilters ? "Hide filters" : "Show filters"}
           </button>
         </div>
       </div>
 
-      {showFilters && (
+      {adminShowFilters && (
         <div className="filter-card">
           <input
             type="text"
             placeholder="Search title or description"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={adminSearchTerm}
+            onChange={(e) => setAdminSearchTerm(e.target.value)}
           />
           <div className="price-range">
             <input
               type="number"
               placeholder="Min ETH"
-              value={minEth}
-              onChange={(e) => setMinEth(e.target.value)}
+              value={adminMinEth}
+              onChange={(e) => setAdminMinEth(e.target.value)}
             />
             <input
               type="number"
               placeholder="Max ETH"
-              value={maxEth}
-              onChange={(e) => setMaxEth(e.target.value)}
+              value={adminMaxEth}
+              onChange={(e) => setAdminMaxEth(e.target.value)}
             />
           </div>
           <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            value={adminStatusFilter}
+            onChange={(e) => setAdminStatusFilter(e.target.value)}
           >
             <option value="">All Status</option>
             <option value="active">Active</option>
-            <option value="completed">Completed</option>
+            <option value="inactive">Inactive</option>
+            <option value="pending">Pending</option>
           </select>
           <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
+            value={adminCategoryFilter}
+            onChange={(e) => setAdminCategoryFilter(e.target.value)}
           >
             <option value="">All Categories</option>
             <option value="Education">Education</option>
             <option value="Health">Health</option>
             <option value="Sports">Sports</option>
           </select>
-          <button className="execute-filter-btn" onClick={handleFilter}>
+          <button className="execute-filter-btn" onClick={handleAdminFilter}>
             Apply Filters
           </button>
         </div>
       )}
 
       <div className="card-container">
-        {filteredCampaigns.map((card) => (
+        {adminFilteredCampaigns.map((card) => (
           <div
             className="campaign-card"
             key={card.id}
-            onClick={() => navigate(`/campaign/${card.id}`)}
+            onClick={() => navigate(`/admin/campaign/${card.id}`)}
             style={{ cursor: "pointer" }}
           >
-            <img src={card.image} alt={card.title} />
+            <img
+              src={`http://localhost:5000/uploads/campaigns/${card.image_url}`}
+              alt={card.title}
+            />
             <div className="card-content">
               <div className="admin-actions-top">
                 <div className="left-icons">
                   <FaCheckCircle
-                    className="icon-button1"
+                    className={`icon-button1 ${
+                      card.status === "active" ? "icon-active" : "icon-inactive"
+                    }`}
                     title="Verify"
-                    onClick={(e) => handleVerify(e, card.id)}
+                    onClick={(e) => handleAdminVerify(e, card.id)}
                   />
                   <FaBan
-                    className="icon-button2"
+                    className={`icon-button2 ${
+                      card.status === "inactive"
+                        ? "icon-inactive-ban"
+                        : "icon-inactive"
+                    }`}
                     title="Deactivate"
-                    onClick={(e) => handleDeactivate(e, card.id)}
+                    onClick={(e) => handleAdminDeactivate(e, card.id)}
                   />
                 </div>
                 <FaTrashAlt
                   className="icon-button right3"
                   title="Delete"
-                  onClick={(e) => handleDelete(e, card.id)}
+                  onClick={(e) => handleAdminDelete(e, card.id)}
                 />
               </div>
-              <p className="owner">{card.owner}</p>
+              <p className="owner">{card.owner_name}</p>
               <h3>{card.title}</h3>
-              <p className="desc">{card.desc}</p>
+              <p className="desc">{card.story}</p>
               <div className="bottom-info">
-                <span>🎁 {card.eth} eth</span>
-                <span>{card.progress}%</span>
+                <span>🎁 {card.goal_amount} ETH</span>
+                <span>{card.progress || 0}%</span>
               </div>
             </div>
           </div>
@@ -237,4 +290,4 @@ const Explore_Admin = () => {
   );
 };
 
-export default Explore_Admin;
+export default AdminExplore;

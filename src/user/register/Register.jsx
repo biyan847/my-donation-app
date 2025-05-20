@@ -23,17 +23,56 @@ const Register = () => {
     setCaptchaValue(value);
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    setOtpSent(true);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/users/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Kirim OTP ke email setelah berhasil register
+        await fetch("http://localhost:5000/api/send-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+
+        alert("Registrasi berhasil! Silakan cek email untuk OTP.");
+        setOtpSent(true);
+      } else {
+        alert(data.message || "Registrasi gagal.");
+      }
+    } catch (err) {
+      alert("Terjadi kesalahan server.");
+      console.error(err);
+    }
   };
 
-  const handleOtpVerify = () => {
-    if (otp === "123456") {
-      alert("Registrasi berhasil!");
-      navigate("/login");
-    } else {
-      alert("OTP salah, coba lagi.");
+  const handleOtpVerify = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("OTP valid. Registrasi selesai!");
+        navigate("/login");
+      } else {
+        alert(data.message || "OTP salah atau kedaluwarsa.");
+      }
+    } catch (err) {
+      alert("Gagal verifikasi OTP.");
+      console.error(err);
     }
   };
 

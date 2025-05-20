@@ -2,17 +2,9 @@ import React from "react";
 import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../dasbord/Navbar"; // pastikan path sesuai struktur folder
-import { useEffect } from "react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      navigate("/login"); // Jika tidak ada token, arahkan ke halaman login
-    }
-  }, [navigate]);
 
   return (
     <>

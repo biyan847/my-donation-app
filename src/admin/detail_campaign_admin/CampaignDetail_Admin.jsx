@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import "./CampaignDetail.css";
+import "./CampaignDetail_Admin.css"; // tetap pakai styling yang sama
 
-const CampaignDetail = () => {
+const CampaignDetail_Admin = () => {
   const { id } = useParams();
   const [campaign, setCampaign] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -10,7 +10,15 @@ const CampaignDetail = () => {
   useEffect(() => {
     const fetchCampaignDetail = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/campaigns/${id}`);
+        const token = localStorage.getItem("authToken");
+        const res = await fetch(
+          `http://localhost:5000/api/admins/campaigns/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         const data = await res.json();
         if (res.ok) {
           setCampaign(data);
@@ -93,4 +101,4 @@ const CampaignDetail = () => {
   );
 };
 
-export default CampaignDetail;
+export default CampaignDetail_Admin;

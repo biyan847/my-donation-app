@@ -1,50 +1,40 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./Campaign.css";
 
 const Campaign = () => {
-  const campaigns = [
-    {
-      id: 1,
-      owner: "Olivia Rhye",
-      title: "Ms. Saint-Martin Doranyia Pascal",
-      desc: "Hi! This is your Miss Teen Carnival 2022...",
-      eth: 10,
-      progress: 50,
-      image: "/Background.jpg",
-      date: "2024-04-01",
-      status: "active",
-      category: "Education",
-    },
-    {
-      id: 2,
-      owner: "Jaylon Aminoff",
-      title: "LET'S MAKE THE DIY...",
-      desc: "David Perez aka Chino, who started skating...",
-      eth: 50,
-      progress: 75,
-      image: "/donate.jpeg",
-      date: "2024-03-15",
-      status: "completed",
-      category: "Sports",
-    },
-    {
-      id: 3,
-      owner: "Jakob Septimus",
-      title: "Mini-Oven for pick-a-pão",
-      desc: "I would like nothing more than to continue...",
-      eth: 19,
-      progress: 75,
-      image: "/campaign3.jpg",
-      date: "2024-03-25",
-      status: "active",
-      category: "Health",
-    },
-  ];
+  const navigate = useNavigate();
 
-  const [filteredCampaigns, setFilteredCampaigns] = useState(campaigns);
+  const [campaigns, setCampaigns] = useState([]);
+  const [filteredCampaigns, setFilteredCampaigns] = useState([campaigns]);
   const [priceOrder, setPriceOrder] = useState("desc");
   const [dateOrder, setDateOrder] = useState("desc");
+
+  // Tambahan: state loading
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserCampaigns = async () => {
+      setIsLoading(true);
+      try {
+        const token = localStorage.getItem("userToken");
+        const res = await fetch("http://localhost:5000/api/campaigns", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        setCampaigns(data);
+        setFilteredCampaigns(data);
+      } catch (err) {
+        console.error("Failed to fetch user campaigns", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserCampaigns();
+  }, []);
 
   const toggleSortByPrice = () => {
     const nextOrder = priceOrder === "asc" ? "desc" : "asc";
@@ -65,17 +55,32 @@ const Campaign = () => {
     setFilteredCampaigns(sorted);
     setDateOrder(nextOrder);
   };
-  const resetView = () => {
-    setFilteredCampaigns(campaigns);
-    setPriceOrder("desc");
-    setDateOrder("desc");
+
+  const resetView = async () => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:5000/api/campaigns", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      setFilteredCampaigns(data);
+    } catch (err) {
+      console.error("Failed to reset view", err);
+    } finally {
+      setIsLoading(false);
+      setPriceOrder("desc");
+      setDateOrder("desc");
+    }
   };
 
   return (
     <div className="campaign-container">
       <div className="campaign-header">
         <div className="campaign-heading-group">
-          <h1>MY CAMPAIGNS</h1>
+          <h1>My Campaign</h1>
           <p>Where do you want to help</p>
         </div>
 
@@ -94,22 +99,37 @@ const Campaign = () => {
         </div>
       </div>
 
-      <div className="card-container">
-        {filteredCampaigns.map((card) => (
-          <div className="campaign-card" key={card.id}>
-            <img src={card.image} alt={card.title} />
-            <div className="card-content">
-              <p className="owner">{card.owner}</p>
-              <h3>{card.title}</h3>
-              <p className="desc">{card.desc}</p>
-              <div className="bottom-info">
-                <span>🎁 {card.eth} eth</span>
-                <span>{card.progress}%</span>
+      {/* Loading Indicator */}
+      {isLoading ? (
+        <div className="loading-indicator">
+          <div className="spinner"></div>
+        </div>
+      ) : (
+        <div className="card-container">
+          {filteredCampaigns.map((card) => (
+            <div
+              className="campaign-card"
+              key={card.id}
+              onClick={() => navigate(`/campaign/${card.id}`)}
+              style={{ cursor: "pointer" }}
+            >
+              <img
+                src={`http://localhost:5000/uploads/campaigns/${card.image_url}`}
+                alt={card.title}
+              />
+              <div className="card-content">
+                <p className="owner">{card.status}</p>
+                <h3>{card.title}</h3>
+                <p className="desc">{card.story}</p>
+                <div className="bottom-info">
+                  <span>🎁 {card.goal_amount} ETH</span>
+                  <span>{card.progress || 0}%</span>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

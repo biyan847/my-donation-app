@@ -1,16 +1,3 @@
-body {
-  margin: 0;
-  padding: 0;
-  background-color: white;
-}
-
-html,
-body,
-#root {
-  height: 100%;
-  width: 100%;
-}
-
 .explore-container {
   padding: 120px 40px 40px;
   font-family: "Segoe UI", sans-serif;
@@ -36,7 +23,7 @@ body,
   gap: 24px;
 }
 
-.campaign-card {
+.explore-card {
   width: 300px;
   border: 1px solid #ddd;
   border-radius: 10px;
@@ -45,14 +32,18 @@ body,
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-.campaign-card img {
+.explore-card img {
   width: 100%;
-  height: 180px;
-  object-fit: cover;
+  height: 200px; /* ganti dari 180px ke 200px agar sama seperti Explore */
+  object-fit: cover; /* ini sudah benar: crop agar tetap proporsional */
+  display: block;
 }
 
 .card-content {
-  padding: 16px;
+  height: 180px; /* atau pakai min-height jika konten bisa fleksibel */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .card-content .owner {
@@ -161,7 +152,7 @@ body,
   gap: 12px;
 }
 
-.campaign-execute-filter-btn {
+.explore-execute-filter-btn {
   background: #36c24d;
   color: white;
   font-weight: 600;
@@ -173,6 +164,66 @@ body,
   transition: background 0.3s ease;
 }
 
-.campaign-execute-filter-btn:hover {
+.explore-execute-filter-btn:hover {
   background: #2fa043;
+}
+
+/* Spinner CSS */
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30vh;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #36c24d; /* Warna spinner */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Efek blur dan scale kecil untuk semua card kecuali yang dihover */
+.card-container:hover > .campaign-card:not(:hover) {
+  filter: brightness(0.5) saturate(0) contrast(1.2) blur(12px);
+  transform: scale(0.95);
+  transition: filter 0.4s ease, transform 0.4s ease;
+  z-index: 1;
+}
+
+.campaign-card {
+  width: 300px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+
+  /* transisi untuk animasi smooth */
+  transition: transform 0.4s ease, filter 0.4s ease, box-shadow 0.4s ease;
+  will-change: transform, filter;
+
+  /* posisi relatif agar z-index bisa bekerja */
+  position: relative;
+  z-index: 0;
+}
+
+/* Card yang sedang dihover */
+.campaign-card:hover {
+  filter: none;
+  transform: scale(1.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  z-index: 10;
 }

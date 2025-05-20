@@ -1,8 +1,5 @@
 /* --- Navbar base --- */
 .navbar {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   padding: 16px 40px;
   display: flex;
@@ -11,6 +8,7 @@
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   z-index: 10;
+  position: relative;
 }
 
 /* --- Tema warna berdasarkan halaman --- */
@@ -71,4 +69,26 @@
 }
 .navbar-light {
   border-bottom: 1px solid #eaecf0;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center; /* Pastikan avatar dan ikon sejajar secara vertikal */
+  justify-content: flex-end; /* Posisi ke sisi kanan */
+  gap: 10px; /* Sesuaikan gap jika diperlukan */
+  flex-wrap: wrap;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-left: 1000px; /* Memberikan sedikit jarak antara avatar dan ikon */
+}
+
+.settings-icon {
+  font-size: 24px;
+  cursor: pointer;
+  margin-left: 10px; /* Menambahkan sedikit jarak di kiri ikon */
 }

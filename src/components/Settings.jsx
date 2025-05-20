@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Settings.css";
 import cityList from "../data/cities.json";
 
@@ -11,6 +11,43 @@ const Settings = () => {
   const [banner, setBanner] = useState(null);
   const [previewAvatar, setPreviewAvatar] = useState(null);
   const [previewBanner, setPreviewBanner] = useState(null);
+
+  // Fetch user profile saat halaman dimuat
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("userToken");
+        const res = await fetch("http://localhost:5000/api/users/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        if (data.user) {
+          const [first, last = ""] = data.user.full_name?.split(" ") || [
+            "",
+            "",
+          ];
+          setFirstName(first);
+          setLastName(last);
+          setEmail(data.user.email);
+          setLocation(data.user.location || "");
+          setPreviewAvatar(
+            `http://localhost:5000/uploads/profiles/${data.user.profile_photo}`
+          );
+          setPreviewBanner(
+            `http://localhost:5000/uploads/banners/${data.user.banner_image}`
+          );
+          localStorage.setItem("userProfile", JSON.stringify(data.user));
+        }
+      } catch (err) {
+        console.error("Failed to fetch user profile", err);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
@@ -32,8 +69,47 @@ const Settings = () => {
     }
   };
 
-  const handleSave = () => {
-    console.log({ firstName, lastName, email, location, avatar, banner });
+  const handleSave = async () => {
+    const formData = new FormData();
+    formData.append("firstName", firstName);
+    formData.append("lastName", lastName);
+    formData.append("email", email);
+    formData.append("location", location);
+    if (avatar) formData.append("profilePhoto", avatar);
+    if (banner) formData.append("bannerImage", banner);
+
+    try {
+      const token = localStorage.getItem("userToken");
+      const res = await fetch(
+        "http://localhost:5000/api/users/profile/update",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
+
+      const result = await res.json();
+      if (res.ok) {
+        alert("Profile updated successfully!");
+
+        // ✅ Simpan dan trigger pembaruan avatar di Navbar
+        localStorage.setItem("userProfile", JSON.stringify(result.user));
+        window.dispatchEvent(new Event("userProfileUpdated"));
+      } else {
+        alert(result.message || "Failed to update");
+      }
+    } catch (err) {
+      console.error("Update error:", err);
+      alert("Error updating profile");
+    }
+  };
+  const handleLogout = () => {
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("userProfile");
+    window.location.href = "/login"; // redirect ke login
   };
 
   return (
@@ -45,7 +121,6 @@ const Settings = () => {
       </div>
 
       <div className="settings-content">
-        {/* Left: Form */}
         <form className="settings-form" onSubmit={(e) => e.preventDefault()}>
           <div className="input-group name-fields">
             <div className="input-group">
@@ -129,8 +204,8 @@ const Settings = () => {
                   onChange={handleBannerChange}
                 />
                 <p>
-                  <span className="upload-text">Click here to upload</span> ou
-                  drag here your image
+                  <span className="upload-text">Click here to upload</span> or
+                  drag your image here
                   <br />
                   <small>Recommended 800×600 resolution (max. 1MB)</small>
                 </p>
@@ -138,12 +213,20 @@ const Settings = () => {
             </div>
           </div>
 
-          <button type="submit" className="save-button" onClick={handleSave}>
-            Save settings
-          </button>
+          <div className="settings-button-group">
+            <button type="submit" className="save-button" onClick={handleSave}>
+              Save settings
+            </button>
+            <button
+              type="button"
+              className="logout-button"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
         </form>
 
-        {/* Right: Preview card */}
         <div className="profile-card-preview">
           <div className="card-banner">
             {previewBanner ? (
@@ -160,7 +243,7 @@ const Settings = () => {
               <strong>
                 {firstName} {lastName}
               </strong>
-              <span> {location}</span>
+              <span>{location}</span>
             </div>
           </div>
           <div className="xp-bar">
