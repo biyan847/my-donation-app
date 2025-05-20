@@ -1,0 +1,108 @@
+.admin-login-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.admin-login-left {
+  flex: 1;
+  background: url("/Background.jpg") no-repeat center center;
+  background-size: cover;
+  padding: 300px;
+}
+
+.admin-login-right {
+  flex: 1;
+  background: #f9fafb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.admin-login-box {
+  width: 100%;
+  max-width: 400px;
+}
+
+.admin-login-box h2 {
+  margin-bottom: 8px;
+  font-size: 26px;
+  font-weight: 700;
+  color: #222;
+}
+
+.admin-login-box label {
+  display: block;
+  font-size: 14px;
+  color: #444;
+  margin-bottom: 6px;
+  margin-top: 14px;
+  font-weight: 600;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.admin-login-box input[type="text"],
+.admin-login-box input[type="email"],
+.admin-login-box input[type="password"] {
+  padding: 13px 18px;
+  border-radius: 10px;
+  border: 1px solid #bbb;
+  font-size: 15px;
+  background-color: white;
+  color: #222;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-login-box input:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.admin-password-wrapper {
+  position: relative;
+}
+
+.admin-hide-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #555;
+  cursor: pointer;
+}
+
+.admin-login-btn {
+  margin-top: 10px;
+  background: #4caf50;
+  border: none;
+  padding: 14px;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #fff;
+  transition: background 0.3s ease;
+}
+
+.admin-login-btn:hover {
+  background: #43a047;
+}
+
+.admin-back-arrow {
+  position: absolute;
+  top: 20px;
+  left: 30px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+}

@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./Navbar_Admin.css";
 
@@ -35,19 +34,8 @@ const Navbar_Admin = () => {
         </ul>
       </div>
 
-      <div className="nav-right">
-        <div className="search-bar">
-          <input type="text" placeholder="Search" />
-        </div>
-        <img
-          className="avatar"
-          src="https://img.icons8.com/?size=100&id=11779&format=png&color=000000"
-          alt="User"
-        />
-        <div className="settings-icon" onClick={() => navigate("/settings")}>
-          ⚙️
-        </div>
-      </div>
+      {/* Placeholder kosong untuk menjaga layout tetap seimbang */}
+      <div style={{ width: "50px" }}></div>
     </nav>
   );
 };

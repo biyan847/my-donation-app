@@ -101,3 +101,21 @@
 .create-button:hover {
   background-color: #16a34a;
 }
+
+.loading-indicator-camoaign {
+  text-align: center;
+  font-size: 18px;
+  color: #36c24d;
+  margin-top: 20px;
+  font-weight: bold;
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

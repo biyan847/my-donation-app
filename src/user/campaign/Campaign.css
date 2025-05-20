@@ -1,16 +1,3 @@
-body {
-  margin: 0;
-  padding: 0;
-  background-color: white;
-}
-
-html,
-body,
-#root {
-  height: 100%;
-  width: 100%;
-}
-
 .campaign-container {
   padding: 120px 40px 40px;
   font-family: "Segoe UI", sans-serif;
@@ -47,12 +34,16 @@ body,
 
 .campaign-card img {
   width: 100%;
-  height: 180px;
+  height: 200px;
   object-fit: cover;
+  display: block;
 }
 
 .card-content {
-  padding: 16px;
+  height: 180px; /* atau pakai min-height jika konten bisa fleksibel */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .card-content .owner {
@@ -96,7 +87,7 @@ body,
 }
 
 .campaign-heading-group h1 {
-  font-size: 28px;
+  font-size: 25px;
   color: #111;
 }
 
@@ -154,4 +145,29 @@ body,
 
 .campaign-container .campaign-execute-filter-btn:hover {
   background-color: #16a34a !important;
+}
+
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30vh;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #36c24d;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
