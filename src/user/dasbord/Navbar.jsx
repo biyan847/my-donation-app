@@ -45,7 +45,6 @@ const Navbar = () => {
   const navLinks = [
     { path: "/dashboard", label: "Home" },
     { path: "/explore", label: "Explore" },
-    { path: "/campaigns", label: "Campaigns" },
   ];
 
   const isDashboard = location.pathname === "/";

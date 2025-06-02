@@ -13,7 +13,7 @@ const Explore = () => {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [priceOrder, setPriceOrder] = useState("desc");
   const [dateOrder, setDateOrder] = useState("desc");
-  const [campaigns, setCampaigns] = useState([]); // ← Tambahkan ini
+  const [campaigns, setCampaigns] = useState([]);
   const [filteredCampaigns, setFilteredCampaigns] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
 
@@ -24,8 +24,8 @@ const Explore = () => {
       try {
         const res = await fetch("http://localhost:5000/api/campaigns");
         const data = await res.json();
-        setCampaigns(data); // simpan ke state sumber
-        setFilteredCampaigns(data); // tampilkan juga sebagai data awal
+        setCampaigns(data);
+        setFilteredCampaigns(data);
       } catch (err) {
         console.error("Failed to fetch campaigns", err);
       } finally {

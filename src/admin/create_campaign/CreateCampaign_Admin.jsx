@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CreateCampaign.css";
 
-const CreateCampaign = () => {
+const CreateCampaign_Admin = () => {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
@@ -46,20 +46,23 @@ const CreateCampaign = () => {
     }
 
     try {
-      const token = localStorage.getItem("userToken");
-      const response = await fetch("http://localhost:5000/api/campaigns", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
+      const token = localStorage.getItem("authToken");
+      const response = await fetch(
+        "http://localhost:5000/api/admins/campaigns",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
 
       const data = await response.json();
 
       if (response.ok) {
         alert("Campaign created successfully!");
-        navigate("/campaigns");
+        navigate("/exploreadmin");
       } else {
         alert(`Failed to create campaign: ${data.message || "Unknown error"}`);
       }
@@ -150,4 +153,4 @@ const CreateCampaign = () => {
   );
 };
 
-export default CreateCampaign;
+export default CreateCampaign_Admin;
