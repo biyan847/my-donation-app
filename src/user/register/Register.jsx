@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [username, setUsername] = useState("");
+  const [nim, setNim] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [captchaValue, setCaptchaValue] = useState(null);
@@ -16,8 +17,8 @@ const Register = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setIsFormValid(username && email && password && captchaValue);
-  }, [username, email, password, captchaValue]);
+    setIsFormValid(username && nim && email && password && captchaValue);
+  }, [username, nim, email, password, captchaValue]);
 
   const handleCaptchaChange = (value) => {
     setCaptchaValue(value);
@@ -27,24 +28,30 @@ const Register = () => {
     e.preventDefault();
 
     try {
+      // Kirim data lengkap register
       const response = await fetch("http://localhost:5000/api/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, nim, email, password }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // Kirim OTP ke email setelah berhasil register
-        await fetch("http://localhost:5000/api/send-otp", {
+        // Kirim OTP setelah registrasi berhasil
+        const otpResponse = await fetch("http://localhost:5000/api/send-otp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email }),
         });
 
-        alert("Registrasi berhasil! Silakan cek email untuk OTP.");
-        setOtpSent(true);
+        if (otpResponse.ok) {
+          alert("Registrasi berhasil! Silakan cek email untuk OTP.");
+          setOtpSent(true);
+        } else {
+          const otpData = await otpResponse.json();
+          alert(otpData.message || "Gagal mengirim OTP.");
+        }
       } else {
         alert(data.message || "Registrasi gagal.");
       }
@@ -99,6 +106,13 @@ const Register = () => {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                />
+
+                <label>NIM</label>
+                <input
+                  type="text"
+                  value={nim}
+                  onChange={(e) => setNim(e.target.value)}
                 />
 
                 <label>Email address</label>

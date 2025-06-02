@@ -26,7 +26,7 @@ const AdminLogin = () => {
         localStorage.setItem("admin", "true");
         alert("Login admin berhasil!");
         console.log("Login berhasil, akan redirect...");
-        navigate("/dasboardadmin");
+        navigate("/dashboardadmin");
       } else {
         alert(data.message || "Login gagal.");
       }

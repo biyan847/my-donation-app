@@ -10,8 +10,6 @@ import Explore from "./user/explore/Explore";
 import Register from "./user/register/Register";
 import Login from "./user/login/Login";
 import Navbar from "./user/dasbord/Navbar";
-import Campaign from "./user/campaign/Campaign";
-import CreateCampaign from "./user/create_campaign/CreateCampaign";
 import CampaignDetail from "./user/detail/CampaignDetail";
 import Setting from "./components/Settings";
 
@@ -25,6 +23,8 @@ import AdminProtectedRoute from "./admin/admin_login/AdminProtectedRoute"; // <-
 import AdminLogin from "./admin/admin_login/AdminLogin";
 
 import CampaignDetail_Admin from "./admin/detail_campaign_admin/CampaignDetail_Admin";
+import UserList_Admin from "./admin/list_user/UserList_Admin";
+import CreateCampaign_Admin from "./admin/create_campaign/CreateCampaign_Admin";
 
 function AppRoutes() {
   useEffect(() => {
@@ -74,9 +74,11 @@ function AppRoutes() {
     location.pathname === "/admin-login";
 
   const isAdminRoute =
-    location.pathname.startsWith("/dasboardadmin") ||
+    location.pathname.startsWith("/dashboardadmin") ||
     location.pathname.startsWith("/exploreadmin") ||
-    location.pathname.startsWith("/admin/campaign");
+    location.pathname.startsWith("/admin/campaign") ||
+    location.pathname.startsWith("/userlistadmin") ||
+    location.pathname.startsWith("/createcampaignadmin");
 
   return (
     <>
@@ -98,22 +100,7 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/campaigns"
-          element={
-            <ProtectedRoute>
-              <Campaign />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/create-campaign"
-          element={
-            <ProtectedRoute>
-              <CreateCampaign />
-            </ProtectedRoute>
-          }
-        />
+
         <Route
           path="/campaign/:id"
           element={
@@ -133,7 +120,7 @@ function AppRoutes() {
 
         {/* Admin route tetap bisa diatur terpisah */}
         <Route
-          path="/dasboardadmin"
+          path="/dashboardadmin"
           element={
             <AdminProtectedRoute>
               <Dashboard_Admin />
@@ -154,6 +141,24 @@ function AppRoutes() {
           element={
             <AdminProtectedRoute>
               <CampaignDetail_Admin />
+            </AdminProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/userlistadmin"
+          element={
+            <AdminProtectedRoute>
+              <UserList_Admin />
+            </AdminProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/createcampaignadmin"
+          element={
+            <AdminProtectedRoute>
+              <CreateCampaign_Admin />
             </AdminProtectedRoute>
           }
         />
