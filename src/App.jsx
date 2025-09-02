@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,60 +11,55 @@ import Explore from "./user/explore/Explore";
 import Register from "./user/register/Register";
 import Login from "./user/login/Login";
 import Navbar from "./user/dasbord/Navbar";
-import Campaign from "./user/campaign/Campaign";
-import CreateCampaign from "./user/create_campaign/CreateCampaign";
 import CampaignDetail from "./user/detail/CampaignDetail";
 import Setting from "./components/Settings";
 
 import Dashboard_Admin from "./admin/dasbord_admin/Dashboard_Admin";
 import Explore_Admin from "./admin/explore_admin/Explore_Admin";
 import Navbar_Admin from "./admin/dasbord_admin/Navbar_Admin";
-import { useEffect } from "react";
+import { useRef, useEffect } from "react";
 
 import ProtectedRoute from "./components/ProtectedRoute"; // <== Tambahkan ini
 import AdminProtectedRoute from "./admin/admin_login/AdminProtectedRoute"; // <-- tambahan
 import AdminLogin from "./admin/admin_login/AdminLogin";
 
 import CampaignDetail_Admin from "./admin/detail_campaign_admin/CampaignDetail_Admin";
+import CreateCampaign_Admin from "./admin/create_campaign/CreateCampaign_Admin";
 
+import IntroVideo from "./components/IntroVideo";
+import ForgotPassword from "./user/login/ForgotPassword";
+import Register_Admin from "./admin/register_admin/Register_Admin";
 function AppRoutes() {
+  const logoutTimer = useRef(null);
   useEffect(() => {
-    // Tandai saat user aktif di halaman
-    sessionStorage.setItem("stayOpen", "true");
+    const logoutUser = () => {
+      localStorage.removeItem("userToken");
+      localStorage.removeItem("userProfile");
+      // window.location.href = "/login";
+    };
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
-        // Tab jadi tidak aktif (bisa pindah tab / mau ditutup)
-        sessionStorage.setItem("stayOpen", "false");
+        // SET timer logout, misal 30 detik (30000 ms)
+        logoutTimer.current = setTimeout(() => {
+          logoutUser();
+        }, 30000); // 30 detik
+      } else if (document.visibilityState === "visible") {
+        // Tab aktif lagi, cancel timer logout
+        if (logoutTimer.current) {
+          clearTimeout(logoutTimer.current);
+          logoutTimer.current = null;
+        }
       }
-    };
-
-    const handlePageHide = () => {
-      const stayOpen = sessionStorage.getItem("stayOpen");
-      console.log(">> pagehide fired. stayOpen =", stayOpen); // ✅ debug log
-      if (stayOpen === "false") {
-        localStorage.removeItem("userToken");
-        localStorage.removeItem("userProfile");
-        localStorage.removeItem("adminToken");
-        localStorage.removeItem("admin");
-        console.log(">> Token dan data berhasil dihapus.");
-      }
-    };
-
-    const handleBeforeUnload = () => {
-      // 🔒 Tambahan untuk Chrome dan browser lain yang agresif
-      localStorage.removeItem("userToken");
-      localStorage.removeItem("userProfile");
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    window.addEventListener("pagehide", handlePageHide);
-    window.addEventListener("beforeunload", handleBeforeUnload); // ✅ di sini
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.removeEventListener("pagehide", handlePageHide);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      if (logoutTimer.current) {
+        clearTimeout(logoutTimer.current);
+      }
     };
   }, []);
 
@@ -71,12 +67,15 @@ function AppRoutes() {
   const hideNavbar =
     location.pathname === "/register" ||
     location.pathname === "/login" ||
-    location.pathname === "/admin-login";
+    location.pathname === "/admin-login" ||
+    location.pathname === "/forgot-password" ||
+    location.pathname === "/register-admin";
 
   const isAdminRoute =
-    location.pathname.startsWith("/dasboardadmin") ||
+    location.pathname.startsWith("/dashboardadmin") ||
     location.pathname.startsWith("/exploreadmin") ||
-    location.pathname.startsWith("/admin/campaign");
+    location.pathname.startsWith("/admin/campaign") ||
+    location.pathname.startsWith("/createcampaignadmin");
 
   return (
     <>
@@ -88,6 +87,7 @@ function AppRoutes() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/register-admin" element={<Register_Admin />} />
 
         {/* Dibungkus dengan ProtectedRoute */}
         <Route
@@ -98,22 +98,7 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/campaigns"
-          element={
-            <ProtectedRoute>
-              <Campaign />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/create-campaign"
-          element={
-            <ProtectedRoute>
-              <CreateCampaign />
-            </ProtectedRoute>
-          }
-        />
+
         <Route
           path="/campaign/:id"
           element={
@@ -133,7 +118,7 @@ function AppRoutes() {
 
         {/* Admin route tetap bisa diatur terpisah */}
         <Route
-          path="/dasboardadmin"
+          path="/dashboardadmin"
           element={
             <AdminProtectedRoute>
               <Dashboard_Admin />
@@ -157,15 +142,45 @@ function AppRoutes() {
             </AdminProtectedRoute>
           }
         />
+
+        <Route
+          path="/createcampaignadmin"
+          element={
+            <AdminProtectedRoute>
+              <CreateCampaign_Admin />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
     </>
   );
 }
 
 export default function App() {
+  const [dashboardReady, setDashboardReady] = useState(false);
+  const [hideSplash, setHideSplash] = useState(false);
+
   return (
-    <Router>
-      <AppRoutes />
-    </Router>
+    <>
+      {/* Splash screen selalu render lebih dulu */}
+      <IntroVideo
+        onShowDashboard={() => setDashboardReady(true)}
+        onEnd={() => setHideSplash(true)}
+      />
+      {/* Dashboard mulai render hanya setelah onShowDashboard terpanggil */}
+      {dashboardReady && (
+        <div
+          style={{
+            minHeight: "100vh",
+            minWidth: "100vw",
+          }}
+        >
+          <Router>
+            <AppRoutes />
+          </Router>
+        </div>
+      )}
+    </>
   );
 }

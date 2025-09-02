@@ -26,7 +26,7 @@ const AdminLogin = () => {
         localStorage.setItem("admin", "true");
         alert("Login admin berhasil!");
         console.log("Login berhasil, akan redirect...");
-        navigate("/dasboardadmin");
+        navigate("/dashboardadmin");
       } else {
         alert(data.message || "Login gagal.");
       }
@@ -81,6 +81,12 @@ const AdminLogin = () => {
             <button type="submit" className="admin-login-btn">
               Log In
             </button>
+            <p
+              className="admin-register-link"
+              onClick={() => navigate("/register-admin")}
+            >
+              Belum punya akun? <span>Register</span>
+            </p>
           </form>
         </motion.div>
       </div>

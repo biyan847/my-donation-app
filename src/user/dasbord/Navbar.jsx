@@ -6,33 +6,30 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [avatarUrl, setAvatarUrl] = useState(null);
+  const [profileData, setProfileData] = useState({});
 
   useEffect(() => {
     const loadProfile = () => {
       const storedProfile = localStorage.getItem("userProfile");
-      let profileData = null;
-
+      let data = null;
       try {
-        profileData = storedProfile ? JSON.parse(storedProfile) : null;
+        data = storedProfile ? JSON.parse(storedProfile) : null;
       } catch (err) {
         console.warn("userProfile JSON parse error:", err);
-        profileData = null;
+        data = null;
       }
-
-      if (profileData?.profile_photo) {
-        setAvatarUrl(
-          `http://localhost:5000/uploads/profiles/${profileData.profile_photo}`
-        );
+      setProfileData(data || {});
+      if (data?.profile_photo) {
+        setAvatarUrl(`${data.profile_photo}`);
       } else {
-        setAvatarUrl(null); // fallback jika tidak ada foto
+        setAvatarUrl(
+          "https://img.icons8.com/?size=100&id=11779&format=png&color=000000"
+        );
       }
     };
 
-    loadProfile(); // panggil saat pertama render
-
-    // Dengarkan event saat login/update profil
+    loadProfile();
     window.addEventListener("userProfileUpdated", loadProfile);
-
     return () => {
       window.removeEventListener("userProfileUpdated", loadProfile);
     };
@@ -45,9 +42,7 @@ const Navbar = () => {
   const navLinks = [
     { path: "/dashboard", label: "Home" },
     { path: "/explore", label: "Explore" },
-    { path: "/campaigns", label: "Campaigns" },
   ];
-
   const isDashboard = location.pathname === "/";
 
   return (
@@ -71,17 +66,14 @@ const Navbar = () => {
       </div>
 
       <div className="nav-right">
-        <img
-          className="avatar"
-          src={
-            avatarUrl ||
-            "https://img.icons8.com/?size=100&id=11779&format=png&color=000000"
-          }
-          alt="User"
-        />
-      </div>
-      <div className="settings-icon" onClick={() => navigate("/settings")}>
-        ⚙️
+        <div className="user-info-navbar">
+          <div className="user-email-navbar">{profileData?.email}</div>
+          <div className="user-name-navbar">{profileData?.full_name}</div>
+        </div>
+        <img className="avatar" src={avatarUrl} alt="User" />
+        <div className="settings-icon" onClick={() => navigate("/settings")}>
+          ⚙️
+        </div>
       </div>
     </nav>
   );

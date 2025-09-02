@@ -10,8 +10,9 @@ const Navbar_Admin = () => {
   if (isAuthPage) return null;
 
   const navLinks = [
-    { path: "/dasboardadmin", label: "Home" },
+    { path: "/dashboardadmin", label: "Home" },
     { path: "/exploreadmin", label: "Explore" },
+    { path: "/createcampaignadmin", label: "Create Campaign" },
   ];
 
   const isDashboard = location.pathname === "/";
