@@ -1,0 +1,181 @@
+.admin-register-container {
+  display: flex;
+  width: 100vw;
+  min-height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+  overflow-y: auto;
+}
+
+.admin-register-left {
+  flex: 1;
+  background: url("/Background.jpg") no-repeat center center;
+  background-size: cover;
+  padding: 300px;
+}
+
+.admin-register-right {
+  flex: 1;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  min-height: 100vh;
+}
+
+.admin-register-box input:focus {
+  outline: none;
+  border-color: #999;
+  box-shadow: 0 0 0 1px #ccc;
+}
+
+.admin-register-box h2 {
+  margin-bottom: 5px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #222;
+}
+
+.admin-register-box label {
+  display: block;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 6px;
+  margin-top: 12px;
+  font-weight: 500;
+}
+
+.admin-register-box label:first-of-type {
+  margin-top: 0;
+}
+
+.admin-login-link {
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #007bff;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+.admin-login-link span {
+  text-decoration: underline;
+  font-weight: bold;
+}
+.admin-login-link:hover span {
+  color: #0056b3;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.admin-register-box input[type="text"],
+.admin-register-box input[type="email"],
+.admin-register-box input[type="password"] {
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  width: 100%;
+  background-color: white;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.admin-password-wrapper {
+  position: relative;
+}
+
+.admin-hide-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #555;
+  cursor: pointer;
+  user-select: none;
+}
+
+small {
+  font-size: 12px;
+  color: #777;
+  margin-top: -5px;
+}
+
+.create-account-btn {
+  margin-top: 10px;
+  background: #ddd;
+  border: none;
+  padding: 14px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+
+.create-account-btn.active {
+  background: #007bff;
+  cursor: pointer;
+}
+
+.admin-terms {
+  margin-top: 16px;
+  font-size: 12px;
+  color: #555;
+  text-align: left;
+}
+.admin-terms a {
+  text-decoration: underline;
+  color: #000;
+}
+
+.admin-back-arrow {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #333;
+  font-weight: 500;
+  z-index: 10;
+}
+
+/* Responsive untuk layar kecil */
+@media (max-width: 768px) {
+  .admin-register-container {
+    flex-direction: column;
+    min-height: auto;
+  }
+  .admin-register-left,
+  .admin-register-right {
+    flex: none;
+    width: 100%;
+    height: auto;
+  }
+  .admin-register-left {
+    height: 200px;
+  }
+}
+
+/* Responsive untuk layar kecil */
+@media (max-width: 768px) {
+  .admin-register-container {
+    flex-direction: column;
+    min-height: auto;
+  }
+  .admin-register-left,
+  .admin-register-right {
+    flex: none;
+    width: 100%;
+    height: auto;
+  }
+  .admin-register-left {
+    height: 200px;
+  }
+}

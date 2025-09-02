@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Explore_Admin.css";
 import { FaCheckCircle, FaBan, FaTrashAlt } from "react-icons/fa";
+import Web3 from "web3";
+import DonationEscrow from "../../contracts/DonationEscrow.json";
+
+const CONTRACT_ADDRESS = "0x659736c9e4F2ea03FDEc77d30858963Ea0B819BA";
 
 const AdminExplore = () => {
   const navigate = useNavigate();
@@ -15,9 +19,12 @@ const AdminExplore = () => {
   const [adminPriceOrder, setAdminPriceOrder] = useState("desc");
   const [adminDateOrder, setAdminDateOrder] = useState("desc");
   const [adminShowFilters, setAdminShowFilters] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
+  const [progressMap, setProgressMap] = useState({});
   useEffect(() => {
     const fetchAdminCampaigns = async () => {
+      setIsLoading(true);
       const token = localStorage.getItem("authToken");
       try {
         const res = await fetch("http://localhost:5000/api/admins/campaigns", {
@@ -28,8 +35,44 @@ const AdminExplore = () => {
         const data = await res.json();
         setAdminCampaigns(data);
         setAdminFilteredCampaigns(data);
+        fetchAllProgressFromContract(data);
       } catch (err) {
         console.error("Error fetching campaigns:", err);
+      } finally {
+        setTimeout(() => setIsLoading(false), 700);
+      }
+    };
+    const fetchAllProgressFromContract = async (campaignsData) => {
+      try {
+        if (!window.ethereum) return;
+        const web3 = new Web3(window.ethereum);
+        const contract = new web3.eth.Contract(
+          DonationEscrow.abi,
+          CONTRACT_ADDRESS
+        );
+        let progressObj = {};
+        for (let c of campaignsData) {
+          const blockchainId = Number(c.blockchain_campaign_id);
+          if (isNaN(blockchainId)) continue;
+          try {
+            const contractData = await contract.methods
+              .getCampaign(blockchainId)
+              .call();
+            const goal = parseFloat(
+              web3.utils.fromWei(contractData.goal, "ether")
+            );
+            const balance = parseFloat(
+              web3.utils.fromWei(contractData.balance, "ether")
+            );
+            progressObj[c.id] =
+              goal > 0 ? Math.min((balance / goal) * 100, 100) : 0;
+          } catch {
+            progressObj[c.id] = 0;
+          }
+        }
+        setProgressMap(progressObj);
+      } catch {
+        // ignore jika gagal web3
       }
     };
 
@@ -145,31 +188,6 @@ const AdminExplore = () => {
     }
   };
 
-  const handleAdminDelete = async (e, id) => {
-    e.stopPropagation();
-    const confirmDelete = window.confirm("Are you sure you want to delete?");
-    if (!confirmDelete) return;
-
-    const token = localStorage.getItem("authToken");
-    try {
-      const res = await fetch(
-        `http://localhost:5000/api/admins/campaigns/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (res.ok) {
-        alert("Campaign deleted.");
-        setAdminFilteredCampaigns((prev) => prev.filter((c) => c.id !== id));
-      }
-    } catch (err) {
-      console.error("Error deleting campaign:", err);
-    }
-  };
-
   return (
     <div className="explore-container">
       <div className="explore-header">
@@ -236,56 +254,61 @@ const AdminExplore = () => {
           </button>
         </div>
       )}
-
-      <div className="card-container">
-        {adminFilteredCampaigns.map((card) => (
-          <div
-            className="campaign-card"
-            key={card.id}
-            onClick={() => navigate(`/admin/campaign/${card.id}`)}
-            style={{ cursor: "pointer" }}
-          >
-            <img
-              src={`http://localhost:5000/uploads/campaigns/${card.image_url}`}
-              alt={card.title}
-            />
-            <div className="card-content">
-              <div className="admin-actions-top">
-                <div className="left-icons">
-                  <FaCheckCircle
-                    className={`icon-button1 ${
-                      card.status === "active" ? "icon-active" : "icon-inactive"
-                    }`}
-                    title="Verify"
-                    onClick={(e) => handleAdminVerify(e, card.id)}
-                  />
-                  <FaBan
-                    className={`icon-button2 ${
-                      card.status === "inactive"
-                        ? "icon-inactive-ban"
-                        : "icon-inactive"
-                    }`}
-                    title="Deactivate"
-                    onClick={(e) => handleAdminDeactivate(e, card.id)}
-                  />
+      {/* Loading Indicator */}
+      {isLoading ? (
+        <div className="loading-indicator">
+          <div className="spinner"></div> {/* Spinner CSS */}
+        </div>
+      ) : (
+        <div className="card-container">
+          {adminFilteredCampaigns.map((card) => (
+            <div
+              className="campaign-card"
+              key={card.id}
+              onClick={() => navigate(`/admin/campaign/${card.id}`)}
+              style={{ cursor: "pointer" }}
+            >
+              <img src={`${card.image_url}`} alt={card.title} />
+              <div className="card-content">
+                <div className="admin-actions-top">
+                  <div className="left-icons">
+                    <FaCheckCircle
+                      className={`icon-button1 ${
+                        card.status === "active"
+                          ? "icon-active"
+                          : "icon-inactive"
+                      }`}
+                      title="Verify"
+                      onClick={(e) => handleAdminVerify(e, card.id)}
+                    />
+                    <FaBan
+                      className={`icon-button2 ${
+                        card.status === "inactive"
+                          ? "icon-inactive-ban"
+                          : "icon-inactive"
+                      }`}
+                      title="Deactivate"
+                      onClick={(e) => handleAdminDeactivate(e, card.id)}
+                    />
+                  </div>
                 </div>
-                <FaTrashAlt
-                  className="icon-button right3"
-                  title="Delete"
-                  onClick={(e) => handleAdminDelete(e, card.id)}
-                />
-              </div>
-              <p className="owner">{card.owner_name}</p>
-              <h3>{card.title}</h3>
-              <p className="desc">{card.story}</p>
-              <div className="bottom-info">
-                <span>🎁 {card.goal_amount} ETH</span>
-                <span>{card.progress || 0}%</span>
+                <p className="owner">{card.owner_name}</p>
+                <h3>{card.title}</h3>
+                <p className="desc">{card.story}</p>
+                <div className="bottom-info">
+                  <span>🎁 {card.goal_amount} ETH</span>
+                  <span>
+                    {progressMap[card.id] !== undefined
+                      ? progressMap[card.id].toFixed(1)
+                      : 0}
+                    %
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

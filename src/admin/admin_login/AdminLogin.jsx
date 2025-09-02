@@ -81,6 +81,12 @@ const AdminLogin = () => {
             <button type="submit" className="admin-login-btn">
               Log In
             </button>
+            <p
+              className="admin-register-link"
+              onClick={() => navigate("/register-admin")}
+            >
+              Belum punya akun? <span>Register</span>
+            </p>
           </form>
         </motion.div>
       </div>

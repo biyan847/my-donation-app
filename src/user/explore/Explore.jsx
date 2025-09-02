@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Explore.css";
+import Web3 from "web3";
+import DonationEscrow from "../../contracts/DonationEscrow.json";
+
+const CONTRACT_ADDRESS = "0x659736c9e4F2ea03FDEc77d30858963Ea0B819BA";
 
 const Explore = () => {
   const navigate = useNavigate();
@@ -17,19 +21,60 @@ const Explore = () => {
   const [filteredCampaigns, setFilteredCampaigns] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
 
+  const [progressMap, setProgressMap] = useState({});
+
   // State untuk loading
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchCampaigns = async () => {
+      setIsLoading(true);
       try {
         const res = await fetch("http://localhost:5000/api/campaigns");
-        const data = await res.json();
+        let data = await res.json();
+
+        data = data.sort((a, b) => b.id - a.id);
+
         setCampaigns(data);
         setFilteredCampaigns(data);
+        fetchAllProgressFromContract(data);
       } catch (err) {
         console.error("Failed to fetch campaigns", err);
       } finally {
-        setIsLoading(false);
+        setTimeout(() => setIsLoading(false), 1000);
+      }
+    };
+
+    const fetchAllProgressFromContract = async (campaignsData) => {
+      try {
+        if (!window.ethereum) return;
+        const web3 = new Web3(window.ethereum);
+        const contract = new web3.eth.Contract(
+          DonationEscrow.abi,
+          CONTRACT_ADDRESS
+        );
+        let progressObj = {};
+        for (let c of campaignsData) {
+          const blockchainId = Number(c.blockchain_campaign_id);
+          if (isNaN(blockchainId)) continue;
+          try {
+            const contractData = await contract.methods
+              .getCampaign(blockchainId)
+              .call();
+            const goal = parseFloat(
+              web3.utils.fromWei(contractData.goal, "ether")
+            );
+            const balance = parseFloat(
+              web3.utils.fromWei(contractData.balance, "ether")
+            );
+            progressObj[c.id] =
+              goal > 0 ? Math.min((balance / goal) * 100, 100) : 0;
+          } catch {
+            progressObj[c.id] = 0;
+          }
+        }
+        setProgressMap(progressObj);
+      } catch {
+        // ignore jika gagal web3
       }
     };
 
@@ -187,25 +232,30 @@ const Explore = () => {
             <div
               className="campaign-card"
               key={card.id}
-              onClick={() => navigate(`/campaign/${card.id}`)}
+              onClick={() =>
+                navigate(`/campaign/${card.blockchain_campaign_id}`)
+              } // << PENTING!
               style={{ cursor: "pointer" }}
             >
-              <img
-                src={`http://localhost:5000/uploads/campaigns/${card.image_url}`}
-                alt={card.title}
-              />
+              <img src={`${card.image_url}`} alt={card.title} />
               <div className="card-content">
-                <p className="owner">{card.owner || "Unknown"}</p>
+                <p className="owner">{card.owner || "BEM KMFT"}</p>
                 <h3>{card.title}</h3>
                 <p className="desc">{card.story}</p>
                 <div className="bottom-info">
                   <span>🎁 {card.goal_amount} ETH</span>
-                  <span>{card.progress || 0}%</span>
+                  <span>
+                    {progressMap[card.id] !== undefined
+                      ? progressMap[card.id].toFixed(1)
+                      : 0}
+                    %
+                  </span>
                 </div>
               </div>
             </div>
           ))}
         </div>
+        // ...
       )}
     </div>
   );

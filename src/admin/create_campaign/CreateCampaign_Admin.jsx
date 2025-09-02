@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Web3 from "web3";
+import DonationEscrow from "../../contracts/DonationEscrow.json";
 import "./CreateCampaign.css";
+
+const CONTRACT_ADDRESS = "0x659736c9e4F2ea03FDEc77d30858963Ea0B819BA";
 
 const CreateCampaign_Admin = () => {
   const navigate = useNavigate();
@@ -35,47 +39,84 @@ const CreateCampaign_Admin = () => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("story", story);
-    formData.append("deadline", deadline);
-    formData.append("goal_amount", goal);
-    formData.append("category", category);
-    if (image) {
-      formData.append("image", image);
-    }
-
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(
-        "http://localhost:5000/api/admins/campaigns",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
+      if (!window.ethereum) {
+        alert("Please install MetaMask.");
+        return;
+      }
+
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const web3 = new Web3(window.ethereum);
+      const accounts = await web3.eth.getAccounts();
+      const contract = new web3.eth.Contract(
+        DonationEscrow.abi,
+        CONTRACT_ADDRESS
       );
 
-      const data = await response.json();
+      const campaignCountBefore = await contract.methods.campaignCount().call();
 
-      if (response.ok) {
-        alert("Campaign created successfully!");
-        navigate("/exploreadmin");
-      } else {
-        alert(`Failed to create campaign: ${data.message || "Unknown error"}`);
-      }
+      await contract.methods
+        .createCampaign(title, web3.utils.toWei(goal.toString(), "ether"))
+        .send({ from: accounts[0] })
+        .on("receipt", async function () {
+          const blockchain_campaign_id = parseInt(campaignCountBefore);
+
+          // Kirim ke backend
+          const token = localStorage.getItem("authToken");
+          const formData = new FormData();
+          formData.append("title", title);
+          formData.append("story", story);
+          formData.append("deadline", deadline);
+          formData.append("goal_amount", goal);
+          formData.append("category", category);
+          formData.append("blockchain_campaign_id", blockchain_campaign_id);
+          if (image) {
+            formData.append("image", image);
+          }
+
+          try {
+            const response = await fetch(
+              "http://localhost:5000/api/admins/campaigns",
+              {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}` },
+                body: formData,
+              }
+            );
+            const data = await response.json();
+
+            if (response.ok) {
+              alert("Campaign berhasil dibuat dan terdaftar di blockchain!");
+              navigate("/exploreadmin");
+            } else {
+              alert(
+                `Campaign terdaftar di blockchain, tetapi gagal disimpan ke sistem: ${
+                  data.message || "Unknown error"
+                }`
+              );
+            }
+          } catch (backendErr) {
+            console.error("Gagal menyimpan ke backend:", backendErr);
+            alert(
+              "Campaign Anda sudah terdaftar di blockchain, namun gagal disimpan ke sistem. Silakan cek kembali di dashboard atau ulangi input jika diperlukan."
+            );
+          }
+        })
+        .on("error", function (err) {
+          console.error("Transaksi blockchain gagal:", err);
+          alert("Gagal membuat campaign di blockchain.");
+        });
     } catch (error) {
-      alert("Error: " + error.message);
+      console.error("Unexpected error:", error);
+      alert("Terjadi kesalahan. Silakan coba kembali.");
     }
   };
 
+  // TIDAK ADA PERUBAHAN DI RENDER, HANYA HANDLE SUBMIT DIUBAH
   return (
     <div className="create-campaign-container">
       <h2>Tell more about your campaign</h2>
       <p>What it’s about your campaign?</p>
-
       <form onSubmit={handleSubmit} className="campaign-form">
         <label>Your campaign title *</label>
         <input
@@ -85,7 +126,6 @@ const CreateCampaign_Admin = () => {
           onChange={(e) => setTitle(e.target.value)}
           required
         />
-
         <label>Story *</label>
         <textarea
           placeholder="Tell your story here, give details about your scenario. And explain why you need this help on this campaign"
@@ -94,7 +134,6 @@ const CreateCampaign_Admin = () => {
           rows={6}
           required
         ></textarea>
-
         <label>Create a deadline for your campaign *</label>
         <input
           type="date"
@@ -102,7 +141,6 @@ const CreateCampaign_Admin = () => {
           onChange={(e) => setDeadline(e.target.value)}
           required
         />
-
         <label>Goal (amount in ETH) *</label>
         <input
           type="number"
@@ -111,7 +149,6 @@ const CreateCampaign_Admin = () => {
           onChange={(e) => setGoal(e.target.value)}
           required
         />
-
         <label>Category *</label>
         <select
           value={category}
@@ -122,8 +159,11 @@ const CreateCampaign_Admin = () => {
           <option value="Health">Health</option>
           <option value="Education">Education</option>
           <option value="Sports">Sports</option>
+          <option value="Bencana dan kemanusiaan">
+            Bencana dan kemanusiaan
+          </option>
+          <option value="Animal">Animal</option>
         </select>
-
         <label>Upload a beautiful cover image (optional)</label>
         <div className="image-upload">
           {preview ? (
@@ -144,7 +184,6 @@ const CreateCampaign_Admin = () => {
             </div>
           )}
         </div>
-
         <button type="submit" className="create-button">
           ➕ CREATE
         </button>

@@ -194,3 +194,17 @@
 .delete-btn:hover {
   background-color: #b91c1c;
 }
+.progress-bar {
+  width: 100%;
+  background: #eee;
+  height: 18px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 1.3s cubic-bezier(0.22, 1, 0.36, 1);
+}

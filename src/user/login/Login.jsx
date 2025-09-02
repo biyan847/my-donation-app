@@ -32,7 +32,6 @@ const Login = () => {
       });
 
       const data = await response.json();
-
       if (!response.ok) throw new Error(data.message || "Login gagal.");
 
       // ✅ Simpan token
@@ -55,6 +54,14 @@ const Login = () => {
 
       // ✅ Trigger avatar refresh di Navbar
       window.dispatchEvent(new Event("userProfileUpdated"));
+
+      // ✅ Metamask login
+      if (window.ethereum) {
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+      } else {
+        alert("MetaMask is not installed. Please install it first.");
+        return;
+      }
 
       alert("Login berhasil!");
       navigate("/dashboard");
@@ -127,6 +134,9 @@ const Login = () => {
             >
               Log In
             </button>
+            <p className="forgot-password-link">
+              <a href="/forgot-password">Forgot your password?</a>
+            </p>
           </form>
         </motion.div>
       </div>

@@ -247,3 +247,10 @@ html {
   color: #aaa;
   font-weight: 400;
 }
+.footer-logo {
+  width: 200px; /* atau sesuai kebutuhan */
+  height: 200px;
+  margin-left: 15px; /* Ganti angka ini sesuai keinginan */
+  padding-left: 0;
+  display: block;
+}

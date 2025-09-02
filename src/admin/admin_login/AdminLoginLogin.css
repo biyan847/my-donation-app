@@ -106,3 +106,18 @@ form {
   font-size: 14px;
   color: #333;
 }
+.admin-register-link {
+  color: #007bff;
+  text-align: center;
+  margin-top: 18px;
+  font-size: 15px;
+  cursor: pointer;
+  user-select: none;
+}
+.admin-register-link span {
+  text-decoration: underline;
+  font-weight: bold;
+}
+.admin-register-link:hover span {
+  color: #0056b3;
+}

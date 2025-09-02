@@ -4,6 +4,8 @@ import { FaInstagram, FaYoutube } from "react-icons/fa";
 import { SiTiktok } from "react-icons/si";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../dasbord/Navbar";
+import logoKmft from "../../assets/LOGO-BEM-NOBG.png";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -52,6 +54,7 @@ const Dashboard = () => {
 
       <footer className="footer">
         <div className="footer-container">
+          <img src={logoKmft} alt="Logo BEM KMFT" className="footer-logo" />
           <div className="footer-about">
             <h3>Tentang Kami</h3>
             <p>
@@ -105,7 +108,6 @@ const Dashboard = () => {
           reserved.
         </div>
       </footer>
-      {/* FOOTER END */}
     </>
   );
 };

@@ -14,7 +14,9 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
+  const [userData, setUserData] = useState(null); // Store user data temporarily for later use
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setIsFormValid(username && nim && email && password && captchaValue);
@@ -27,8 +29,10 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
 
+    if (isSubmitting) return; // Mencegah submit dobel
+    setIsSubmitting(true);
+
     try {
-      // Kirim data lengkap register
       const response = await fetch("http://localhost:5000/api/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -38,7 +42,8 @@ const Register = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Kirim OTP setelah registrasi berhasil
+        setUserData({ username, nim, email, password });
+
         const otpResponse = await fetch("http://localhost:5000/api/send-otp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -58,16 +63,29 @@ const Register = () => {
     } catch (err) {
       alert("Terjadi kesalahan server.");
       console.error(err);
+    } finally {
+      setIsSubmitting(false); // reset submit state
     }
   };
 
   const handleOtpVerify = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
-      });
+      // Sertakan semua data yang dibutuhkan backend di body
+      const response = await fetch(
+        "http://localhost:5000/api/users/verify-otp",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            otp,
+            userData,
+            password,
+            nim,
+            username,
+          }), // userData berisi username, nim, email, password
+        }
+      );
 
       const data = await response.json();
 
@@ -161,9 +179,9 @@ const Register = () => {
                   className={`create-account-btn ${
                     isFormValid ? "active" : ""
                   }`}
-                  disabled={!isFormValid}
+                  disabled={!isFormValid || isSubmitting}
                 >
-                  Send OTP
+                  {isSubmitting ? "Sending..." : "Send OTP"}
                 </button>
 
                 <p className="terms">

@@ -7,6 +7,7 @@ const Settings = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [location, setLocation] = useState("");
+
   const [avatar, setAvatar] = useState(null);
   const [banner, setBanner] = useState(null);
   const [previewAvatar, setPreviewAvatar] = useState(null);
@@ -33,12 +34,8 @@ const Settings = () => {
           setLastName(last);
           setEmail(data.user.email);
           setLocation(data.user.location || "");
-          setPreviewAvatar(
-            `http://localhost:5000/uploads/profiles/${data.user.profile_photo}`
-          );
-          setPreviewBanner(
-            `http://localhost:5000/uploads/banners/${data.user.banner_image}`
-          );
+          setPreviewAvatar(`${data.user.profile_photo}`);
+          setPreviewBanner(`${data.user.banner_image}`);
           localStorage.setItem("userProfile", JSON.stringify(data.user));
         }
       } catch (err) {

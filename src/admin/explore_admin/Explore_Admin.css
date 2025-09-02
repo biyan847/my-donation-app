@@ -252,7 +252,7 @@
 
 /* Verifikasi aktif (merah) */
 .icon-active {
-  color: red;
+  color: green;
   animation: pulse-green 0.3s ease;
 }
 
@@ -275,11 +275,11 @@
   }
   50% {
     transform: scale(1.2);
-    color: red;
+    color: green;
   }
   100% {
     transform: scale(1);
-    color: red;
+    color: green;
   }
 }
 

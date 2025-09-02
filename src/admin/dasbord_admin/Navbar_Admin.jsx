@@ -12,7 +12,6 @@ const Navbar_Admin = () => {
   const navLinks = [
     { path: "/dashboardadmin", label: "Home" },
     { path: "/exploreadmin", label: "Explore" },
-    { path: "/userlistadmin", label: "User List" },
     { path: "/createcampaignadmin", label: "Create Campaign" },
   ];
 
